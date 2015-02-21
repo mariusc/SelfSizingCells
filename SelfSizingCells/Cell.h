@@ -12,4 +12,5 @@
 @interface Cell : UITableViewCell
 
 - (void)configureCellWithData:(Data*)data;
+- (void)didSlide:(UISlider*)slider;
 @end

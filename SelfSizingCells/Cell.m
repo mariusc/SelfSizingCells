@@ -19,6 +19,14 @@
 
 - (void)awakeFromNib {
     // Initialization code
+	self.titleLabel.font = [UIFont systemFontOfSize:17];
+	self.detailLabel.font = [UIFont systemFontOfSize:self.titleLabel.font.pointSize - 2];
+}
+
+- (void)didSlide:(UISlider *)slider
+{
+	self.titleLabel.font = [UIFont systemFontOfSize:slider.value];
+	self.detailLabel.font = [UIFont systemFontOfSize:self.titleLabel.font.pointSize - 2];
 }
 
 - (void)configureCellWithData:(Data*)data

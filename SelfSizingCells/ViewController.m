@@ -13,6 +13,7 @@
 
 @interface ViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UISlider* slider;
 @property (strong, nonatomic) NSArray* dataArray;
 
 
@@ -20,37 +21,34 @@
 
 @implementation ViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
 	[super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
 
 	[self loadData];
 	self.tableView.delegate = self;
 	self.tableView.dataSource = self;
 	self.tableView.allowsSelection = NO;
+	self.slider.value = 14;
+	[self.slider addTarget:self action:@selector(didSlide:) forControlEvents:UIControlEventValueChanged];
 }
 
 - (void)loadData
 {
 	NSMutableArray* mutableDataArray = [[NSMutableArray alloc] init];
 	AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-	[manager GET:@"https://mobilev2.like.st/api/response/89/mariusTest" parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSLog(@"JSON: %@", responseObject);
-		for (NSDictionary* item in responseObject[@"data"][@"data"]) {
+	[manager GET:@"https://api.myjson.com/bins/3x4p3" parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		for (NSDictionary* item in responseObject[@"data"][@"items"]) {
 			Data* data = [[Data alloc] init];
 			[data updateFromDictionary:item];
 			[mutableDataArray addObject:data];
 		}
-		
 		self.dataArray = mutableDataArray;
 		[self.tableView reloadData];
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		NSLog(@"Error: %@", error);
 	}];
-	
-	
 }
-
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -60,14 +58,17 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	Cell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
-	
+	[self.slider addTarget:cell action:@selector(didSlide:) forControlEvents:UIControlEventValueChanged];
 	[cell configureCellWithData:self.dataArray[indexPath.row]];
 	return cell;
-	
-//	UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"normalCell" forIndexPath:indexPath];
-//	cell.textLabel.text = ((Data*)self.dataArray[indexPath.row]).text;
-//	cell.textLabel.numberOfLines = 0;
-//	return cell;
+
 }
+
+- (void)didSlide:(UISlider*)slider
+{
+	[self.tableView reloadData];
+}
+
+
 
 @end
